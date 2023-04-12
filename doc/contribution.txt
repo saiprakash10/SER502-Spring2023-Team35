@@ -1,0 +1,13 @@
+Contributions till Milestone 1 -
+
+Research and Analysis - Akshat, Ryan, Sai Prakash, Viswas, Manideep
+Grammar - Akshat, Ryan, Sai Prakash
+Design - Sai Prakash, Viswas, Ryan
+Lexer -  Manideep, Akshat
+
+The contribution plan for the final Milestone:
+
+Parser - Akshat, Viswas
+Interpreter - Sai Prakash, Manideep
+Integration - Ryan
+Miscellaneous Tasks - Akshat, Viswas, Ryan, Manideep, Sai Prakash
