@@ -9,7 +9,7 @@ block(t_block('start', C, 'stop', '.')) --> [start], comm(C), [end], ['.'].
 
 
 % Commands are either declaration statements, print statements, if-then-else statements, for loops, while loop statements, a code block or ternary operator.
-comm(t_comm(D, C, ';')) --> decl(D), comm(C).
+comm(t_comm(D, C)) --> decl(D), comm(C).
 comm(t_comm(I, '=', E, ';', C)) --> id(I), [':='], expr(E), [';'], comm(C).
 comm(t_comm(print_statement, ';', C)) --> print_statement_pred(print_statement), [';'], comm(C).
 comm(t_comm(if_then_else, ';', C)) --> if_then_else_pred(if_then_else), [';'], comm(C).
