@@ -70,7 +70,7 @@ T ::=     F * T | F / T | F
 F ::=     I | N
 BI ::=    true | false % Should expr have decl?
 
-I ::= var CH, ST, N; %Fix I and D grammar
+I ::= var CH, ST, N; %Fix I and D grammar?
 N ::=   DG, N | ε
 ST ::=  CH, ST | ε
 DG ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
