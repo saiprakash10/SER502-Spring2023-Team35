@@ -33,7 +33,7 @@ DT ::=    int | float | string | boolean
 data:= BI | N | I | ST
 
 
-C ::=   D, C; 
+C ::=   D, C %Check semi-colon use here
            | I = E; C 
            |print_statement; C
            |If_then_else; C
@@ -68,9 +68,9 @@ E ::=     T + E | T - E | T
 T ::=     ( E ) T
 T ::=     F * T | F / T | F
 F ::=     I | N
-BI ::=    true | false
+BI ::=    true | false % Should expr have decl?
 
-I ::= var CH, ST, N;
+I ::= var CH, ST, N; %Fix I and D grammar
 N ::=   DG, N | ε
 ST ::=  CH, ST | ε
 DG ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
