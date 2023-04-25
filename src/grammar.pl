@@ -24,16 +24,17 @@ CH --> Characters
 P ::=     K 
 K ::=     start C stop. 
  
-D ::=  DT I = data; 
-           | Dt I; 
-           | I = I; 
-           | I = data;  
+D ::=  var DT I = data; D
+           | var Dt var I; D
+           | var I = I; D
+           | var I = data; D
+           | ε
 
 DT ::=    int | float | string | boolean 
 data:= BI | N | I | ST
 
 
-C ::=   D, C %Check semi-colon use here
+C ::=   D C
            | I = E; C 
            |print_statement; C
            |If_then_else; C
@@ -68,11 +69,12 @@ E ::=     T + E | T - E | T
 T ::=     ( E ) T
 T ::=     F * T | F / T | F
 F ::=     I | N
-BI ::=    true | false % Should expr have decl?
+BI ::=    true | false
 
-I ::= var CH, ST, N; %Fix I and D grammar?
-N ::=   DG, N | ε
-ST ::=  CH, ST | ε
+I ::= CH ST N;
+
+N ::=   DG N | ε
+ST ::=  CH ST | ε
 DG ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 CH ::=  Upper_case
         | Lower_case
