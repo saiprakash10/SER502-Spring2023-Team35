@@ -5,7 +5,7 @@ K --> Block
 D --> Declaration 
 C --> Command Lines (Statements) 
 DT --> Data Type 
-Bl --> Boolean Value 
+BI --> Boolean Value 
 B --> Boolean Expression 
 E --> Expression 
 T --> Term 
@@ -32,7 +32,7 @@ D ::=  DT I = data;
 DT ::=    int | float | string | boolean 
 data:= BI | N | I | ST
 
- 
+
 C ::=   D, C; 
            | I = E; C 
            |print_statement; C
@@ -46,16 +46,16 @@ C ::=   D, C;
  
 If_then_else::=  if B { C } 
                 | if B { C } else { C } 
-                | if B { C } elif { C } Elif else { C } 
+                | if B { C } Elif else { C } 
  
-Elif ::= elif { C } Elif | ε 
+Elif ::= elif B { C } Elif | ε 
 
 while_loop::=  while B { C }
  
 for_loop::=  for I in range (N,N){ C }
             | for(I = N; I S N; ID){ C }
  
-ternary_expression::= ( C ) ? E : E
+ternary_expression::= ( B ) ? E : E
 
 print_statement::= print(E)
                   |print(I)
@@ -68,8 +68,10 @@ E ::=     T + E | T - E | T
 T ::=     ( E ) T
 T ::=     F * T | F / T | F
 F ::=     I | N
-Bl ::=    true | false
-N ::=    DG, N | ε
+BI ::=    true | false
+
+I ::= var CH, ST, N;
+N ::=   DG, N | ε
 ST ::=  CH, ST | ε
 DG ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 CH ::=  Upper_case
@@ -81,8 +83,7 @@ Upper_case ::= A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q
 
 Lower_case ::= a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
 
-special_char ::= ! | " | # | $ | % | & | ' | ( | ) | * | + | , | - | . | / | : | ; | < | = | > | ? | @ | [ | \ | ] | ^ | _ | ` | { | | | } | ~
+special_char ::= ! | " | # | $ | & | ' | ( | ) | * | + | , | - | . | / | : | ; | < | = | > | ? | @ | [ | \ | ] | ^ | _ | ` | { | | | } | ~
 
-
-S ::=     < | > | >= | <= | == | !=
+S ::=    < | > | >= | <= | == | !=
 ID ::=   I++ | I--
