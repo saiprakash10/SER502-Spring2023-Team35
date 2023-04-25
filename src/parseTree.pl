@@ -17,7 +17,7 @@ comm(t_comm(while_loop, ';', C)) --> while_loop_pred(while_loop), [';'], comm(C)
 comm(t_comm(for_loop, ';', C)) --> for_loop_pred(for_loop), [';'], comm(C).
 comm(t_comm(ternary_expression, ';', C)) --> ternary_expression_pred(ternary_expression), [';'], comm(C).
 comm(K) --> block(K).
-% Preicate for epsilon?
+comm([]) --> [].
 
 print_statement_pred(t_print_stat('print', '(', E, ')')) --> [print], [(], expr(E), [)].
 print_statement_pred(t_print_stat('print', '(', I, ')')) --> [print], [(], iden(E), [)].
@@ -29,7 +29,7 @@ if_then_else_pred(t_if_then_else('if', B, '{', C, '}', 'else', '{', C, '}')) -->
 if_then_else_pred(t_if_then_else('if', B, '{', C, '}', Elif 'else', '{', C, '}')) --> [if], bool(B), [{], comm(C), [}], elif_pred(Elif), [else], [{], comm(C), [}].
 
 elif_pred(t_elif('elif', B, '{', C, '}', Elif)) --> [elif], bool(B), [{], comm(C), [}], elif_pred(Elif).
-% Epsilon Predicate
+elif_pred([]) --> [].
 
 while_loop_pred(t_while('while', B, '{', C, '}' )) --> ['while'], bool(B), [{], comm(C).
 
