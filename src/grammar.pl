@@ -25,9 +25,8 @@ P ::=     K
 K ::=     start C stop. 
  
 D ::=  var DT I = data; D
-           | var DT var I; D
+           | var DT I; D
            | var I = I; D
-           | var I = data; D
            | ε
 
 DT ::=    int | float | string | boolean 

@@ -4,8 +4,24 @@
 % Program is a block of code
 program(t_prog(K)) --> block(K).
 
-% Code Block - has a 'start' keyword, followed by declarations, commands, and an 'stop' keyword with period.
+% Code Block - has a 'start' keyword, followed by declarations, commands, and an 'stop' keyword with period
 block(t_block('start', C, 'stop', '.')) --> [start], comm(C), [end], ['.'].
+
+% Declarations and Data Type Definitions
+decl(t_decl('var', DT, I, '=', data, ';', D)) --> [var], data_type(DT), iden(I), ['='], data_literal(data), [';'], decl(D).
+decl(t_decl('var', DT, I, ';', D)) --> [var], data_type(DT), iden(I), [';'], decl(D).
+decl(t_decl('var', I, '=', I, ';', D)) --> [var], iden(I), ['='], iden(I), [';'], decl(D).
+decl([]) --> [].
+
+data_type(t_dt('int')) --> [int].
+data_type(t_dt('float')) --> [float].
+data_type(t_dt('string')) --> [string].
+data_type(t_dt('boolean')) --> [boolean].
+
+data_literal(t_data(BI)) --> binary_iden(BI).
+data_literal(t_data(N)) --> number_iden(N).
+data_literal(t_data(I)) --> iden(I).
+data_literal(t_data(ST)) --> string_iden(BI).
 
 
 % Commands are either declaration statements, print statements, if-then-else statements, for loops, while loop statements, a code block or ternary operator.
@@ -19,21 +35,21 @@ comm(t_comm(ternary_expression, ';', C)) --> ternary_expression_pred(ternary_exp
 comm(K) --> block(K).
 comm([]) --> [].
 
-print_statement_pred(t_print_stat('print', '(', E, ')')) --> [print], [(], expr(E), [)].
-print_statement_pred(t_print_stat('print', '(', I, ')')) --> [print], [(], iden(E), [)].
-print_statement_pred(t_print_stat('print', '(', ST, ')')) --> [print], [(], string(E), [)].
-print_statement_pred(t_print_stat('print', '(', B, ')')) --> [print], [(], bool(E), [)].
+print_statement_pred(t_print_stat('print', '(', E, ')')) --> [print], ['('], expr(E), [')'].
+print_statement_pred(t_print_stat('print', '(', I, ')')) --> [print], ['('], iden(I), [')'].
+print_statement_pred(t_print_stat('print', '(', ST, ')')) --> [print], ['('], string(ST), [')'].
+print_statement_pred(t_print_stat('print', '(', B, ')')) --> [print], ['('], bool(B), [')'].
 
-if_then_else_pred(t_if_then_else('if', B, '{', C, '}')) --> [if], bool(B), [{], comm(C), [}].
-if_then_else_pred(t_if_then_else('if', B, '{', C, '}', 'else', '{', C, '}')) --> [if], bool(B), [{], comm(C), [}], [else],[{], comm(C), [}].
-if_then_else_pred(t_if_then_else('if', B, '{', C, '}', Elif 'else', '{', C, '}')) --> [if], bool(B), [{], comm(C), [}], elif_pred(Elif), [else], [{], comm(C), [}].
+if_then_else_pred(t_if_then_else('if', B, '{', C, '}')) --> [if], bool(B), ['{'], comm(C), [}].
+if_then_else_pred(t_if_then_else('if', B, '{', C, '}', 'else', '{', C, '}')) --> [if], bool(B), ['{'], comm(C), ['}'], [else],['{'], comm(C), ['}'].
+if_then_else_pred(t_if_then_else('if', B, '{', C, '}', Elif 'else', '{', C, '}')) --> [if], bool(B), ['{'], comm(C), ['}'], elif_pred(Elif), [else], ['{'], comm(C), ['}'].
 
-elif_pred(t_elif('elif', B, '{', C, '}', Elif)) --> [elif], bool(B), [{], comm(C), [}], elif_pred(Elif).
+elif_pred(t_elif('elif', B, '{', C, '}', Elif)) --> [elif], bool(B), ['{'] comm(C), ['}'], elif_pred(Elif).
 elif_pred([]) --> [].
 
-while_loop_pred(t_while('while', B, '{', C, '}' )) --> ['while'], bool(B), [{], comm(C).
+while_loop_pred(t_while('while', B, '{', C, '}' )) --> ['while'], bool(B), ['{'], comm(C), ['}'].
 
-for_loop_pred(t_for('for', I, 'in', 'range', '(', N, ',', N, ')', '{', C, '}') --> [for], id(I), [in], [range], [(], number(N), [,], number(N), [)], [{], comm(C), [}].
-for_loop_pred(t_for('for', '(', I, '=', N, ';', I, S, I, ';', ID, ')') --> [for], [(], id(I), [=], number(N), [;], id(I), symbol[S], id(I), [;], iter(ID), [)].
+for_loop_pred(t_for('for', I, 'in', 'range', '(', N, ',', N, ')', '{', C, '}') --> [for], id(I), [in], [range], ['('], number_iden(N), [,], number_iden(N), [')'], ['{'], comm(C), ['}'].
+for_loop_pred(t_for('for', '(', I, '=', N, ';', I, S, I, ';', ID, ')') --> [for], ['('], id(I), ['='], number_iden(N), [';'], iden(I), symbol[S], id(I), [;], iter(ID), [')'].
 
-ternary_expression_pred(t_ternary('(', B, ')', '?', E, ':', E)) --> [(], bool(B), [)], [?], expr(E), [:], expr(E). 
+ternary_expression_pred(t_ternary('(', B, ')', '?', E, ':', E)) --> ['('], bool(B), [')'], ['?'], expr(E), [':'], expr(E). 
