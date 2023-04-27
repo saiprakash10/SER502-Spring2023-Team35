@@ -21,7 +21,7 @@ data_type(t_dt('boolean')) --> [boolean].
 data_literal(t_data(BI)) --> binary_iden(BI).
 data_literal(t_data(N)) --> number_iden(N).
 data_literal(t_data(I)) --> iden(I).
-data_literal(t_data(ST)) --> string_iden(BI).
+data_literal(t_data(ST)) --> string_iden(ST).
 
 
 % Commands are either declaration statements, print statements, if-then-else statements, for loops, while loop statements, a code block or ternary operator.
@@ -49,7 +49,37 @@ elif_pred([]) --> [].
 
 while_loop_pred(t_while('while', B, '{', C, '}' )) --> ['while'], bool(B), ['{'], comm(C), ['}'].
 
-for_loop_pred(t_for('for', I, 'in', 'range', '(', N, ',', N, ')', '{', C, '}') --> [for], id(I), [in], [range], ['('], number_iden(N), [,], number_iden(N), [')'], ['{'], comm(C), ['}'].
-for_loop_pred(t_for('for', '(', I, '=', N, ';', I, S, I, ';', ID, ')') --> [for], ['('], id(I), ['='], number_iden(N), [';'], iden(I), symbol[S], id(I), [;], iter(ID), [')'].
+for_loop_pred(t_for('for', I, 'in', 'range', '(', N, ',', N, ')', '{', C, '}') --> [for], iden(I), [in], [range], ['('], number_iden(N), [,], number_iden(N), [')'], ['{'], comm(C), ['}'].
+for_loop_pred(t_for('for', '(', I, '=', N, ';', I, S, I, ';', ID, ')') --> [for], ['('], iden(I), ['='], number_iden(N), [';'], iden(I), symbol[S], iden(I), [;], iter(ID), [')'].
 
 ternary_expression_pred(t_ternary('(', B, ')', '?', E, ':', E)) --> ['('], bool(B), [')'], ['?'], expr(E), [':'], expr(E). 
+
+bool(t_bool(BI)) --> binary_iden(BI).
+bool(t_bool(E,S,E)) --> expr(E),symbol(S),expr(E).
+bool(t_bool('not',B)) --> [not],bool(B).
+bool(t_bool(B,'and',B)) --> bool(B),[and],bool(B).
+bool(t_bool(B,'or',B)) --> bool(B),[or],bool(B).
+
+expr(t_expr(T,'+',E)) --> term(T),['+'],expr(E).
+expr(t_expr(T,'-',E)) --> term(T),['-'],expr(E).
+expr(t_expr(T)) --> term(T).
+
+term(t_term('(',E,')',T)) --> ['('],expr(E),[')'],term(T).
+
+term(t_term(F,'*',T)) --> form(F),['*'],term(T).
+term(t_term(F,'/',T)) --> form(F),['/'],term(T).
+term(t_term(F)) --> form(F).
+
+form(t_form(I)) --> iden(I).
+form(t_form(N)) --> number_iden(N).
+
+bool(t_bool('true')) --> [true].
+bool(t_bool('false')) --> [false].
+
+iden(t_iden(CH,ST,N)) --> char(CH),string_iden(ST),number_iden(N).
+
+number_iden(t_number(DG,N)) --> digit(DG),number_iden(N).
+number_iden([]) --> [].
+
+string_iden(t_string(CH,ST)) --> string_iden(ST),number_iden(N).
+string_iden([]) --> [].
