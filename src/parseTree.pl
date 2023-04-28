@@ -161,28 +161,28 @@ special_char(t_special_char('"')) --> ["].
 special_char(t_special_char('#')) --> [#].
 special_char(t_special_char('$')) --> [$].
 special_char(t_special_char('&')) --> [&].
-special_char(t_special_char(''') --> ['].
-special_char(t_special_char('(') --> [(].
-special_char(t_special_char(')') --> [)].
-special_char(t_special_char('*') --> [*].
-special_char(t_special_char('+') --> [+].
-special_char(t_special_char(',') --> [,].
-special_char(t_special_char('-') --> [-].
-special_char(t_special_char('.') --> [.].
-special_char(t_special_char('/') --> [/].
-special_char(t_special_char(':') --> [:].
-special_char(t_special_char(';') --> [;].
-special_char(t_special_char('<') --> [<].
-special_char(t_special_char('=') --> [=].
-special_char(t_special_char('>') --> [>].
-special_char(t_special_char('?') --> [?].
-special_char(t_special_char('@') --> [@].
-special_char(t_special_char('[') --> [[].
-special_char(t_special_char('\') --> [\].
-special_char(t_special_char(']') --> []].
-special_char(t_special_char('^') --> [^].
-special_char(t_special_char('_') --> [_].
-special_char(t_special_char('`') --> [`].
+special_char(t_special_char(''')) --> ['].
+special_char(t_special_char('(')) --> [(].
+special_char(t_special_char(')')) --> [)].
+special_char(t_special_char('*')) --> [*].
+special_char(t_special_char('+')) --> [+].
+special_char(t_special_char(',')) --> [,].
+special_char(t_special_char('-')) --> [-].
+special_char(t_special_char('.')) --> [.].
+special_char(t_special_char('/')) --> [/].
+special_char(t_special_char(':')) --> [:].
+special_char(t_special_char(';')) --> [;].
+special_char(t_special_char('<')) --> [<].
+special_char(t_special_char('=')) --> [=].
+special_char(t_special_char('>')) --> [>].
+special_char(t_special_char('?'))--> [?].
+special_char(t_special_char('@')) --> [@].
+special_char(t_special_char('[')) --> [[].
+special_char(t_special_char('\')) --> [\].
+special_char(t_special_char(']')) --> []].
+special_char(t_special_char('^')) --> [^].
+special_char(t_special_char('_')) --> [_].
+special_char(t_special_char('`')) --> [`].
 
 symbol(t_symbol('<')) --> [<]
 symbol(t_symbol('>')) --> [>]
@@ -193,3 +193,5 @@ symbol(t_symbol('!=')) --> [!=]
 
 increment(t_increment(I,'++')) --> iden(I),['++'].
 decrement(t_decrement(I,'--')) --> iden(I),['--'].
+
+
