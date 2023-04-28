@@ -1,5 +1,5 @@
 def Tokenization(filename):
-    assert filename[-3:] == 'spectra', "Unsupported File Extension"
+    assert filename[-7:] == 'spectra', "Unsupported File Extension"
 
     Tokens_list, one_line = [], []
     tk = ''
