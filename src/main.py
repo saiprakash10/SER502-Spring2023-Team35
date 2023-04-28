@@ -3,11 +3,11 @@ from Tokenization import Tokens
 fileName = str(input("Enter the file fileName: "))
 LinesOfTokens = (Tokens.Tokenization("spectra Samples//{}".format(fileName)))
 
-with open('spectra Samples//{}tokenstreams'.format(fileName[:]), 'w') as tokens:
+with open('spectra Samples//{}tokenstreams'.format(fileName[:-7]), 'w') as tokens:
     for i in LinesOfTokens:
         print(i, file=tokens, flush=True)
 
-with open('spectra Samples//{}tokenstreams'.format(fileName[:]), 'r') as grabber:
+with open('spectra Samples//{}tokenstreams'.format(fileName[:-7]), 'r') as grabber:
     lines = grabber.read()
 
 temp = '['
@@ -19,7 +19,7 @@ for i in range(len(lines)):
             temp += ', '
 temp += '].'
 
-with open('spectra Samples//{}tokens'.format(fileName[:]), 'w') as tokens:
+with open('spectra Samples//{}tokens'.format(fileName[:-7]), 'w') as tokens:
     print(temp, file=tokens, flush=True)
 
-print('{}tokens'.format(fileName[:]))
+print('{}tokens'.format(fileName[:-7]))

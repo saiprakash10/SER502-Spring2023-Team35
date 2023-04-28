@@ -1,21 +1,11 @@
 def Tokenization(filename):
-    assert filename[-7:] == 'spectra', "Unsupported File Extension"
+    assert filename[-7:] == 'spectra', "File Extension not supported"
 
     Tokens_list, one_line = [], []
     tk = ''
     s_flag = False
 
-    """
-    Speacial Symbols to replace prebuild operators.
-    ** -> ^
-    != -> !
-    // -> |
-    == -> ~
-    <= ≤  # ≤ alt + 243
-    >= ≥  # ≥ alt + 242
-    """
 
-    # s_char = ['/', '*', '+', '-', '^', '|', '%', '{', '}', '(', ')', '[', ']', '=', '~', '!', '≤', '≥', '<', '>', ':']
     s_char = ['/', '*', '+', '-', '{', '}', '=', '~', '!','.','>','<']
 
     with open(filename, 'r') as grabber:
@@ -24,7 +14,7 @@ def Tokenization(filename):
     for line in lines:
         if line[0] != "#" and line[0] != '\n':
 
-            for ch in line:
+            for i, ch in enumerate(line):
 
                 if ch == '"':
                     if s_flag is False:
@@ -42,6 +32,9 @@ def Tokenization(filename):
                 elif s_flag is True:
                     tk += ch
 
+                elif ch.isalnum() and i > 0 and line[i-1].isalnum():
+                    tk += ch
+
                 elif 48 <= ord(ch) <= 57:
                     if tk != '':
                         one_line.append(tk)
@@ -52,6 +45,7 @@ def Tokenization(filename):
                     if tk != '':
                         one_line.append(tk)
                         tk = ''
+
                 elif ch == '\n':
                     if tk != '':
                         one_line.append(tk)
@@ -84,6 +78,9 @@ def Tokenization(filename):
                     else:
                         one_line.append(ch)
                 else:
+                    if tk != '':
+                        one_line.append(tk)
+                        tk = ''
                     tk += ch
 
     if tk != '' and tk == '\n':
@@ -99,8 +96,5 @@ def Tokenization(filename):
 
 
 if __name__ == "__main__":
-    tks = Tokenization("..\\spectra Samples//basic.spectra")
+    tks = Tokenization("..\\spectra Samples//addition.spectra")
     print(tks)
-# if __name__ == "__main__":
-#     tks = Tokenization("..\\First.lol")
-#     print(tks)
