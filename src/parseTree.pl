@@ -54,12 +54,14 @@ for_loop_pred(t_for('for', '(', I, '=', N, ';', I, S, I, ';', ID, ')') --> [for]
 
 ternary_expression_pred(t_ternary('(', B, ')', '?', E, ':', E)) --> ['('], bool(B), [')'], ['?'], expr(E), [':'], expr(E). 
 
+%Boolean Expressions
 bool(t_bool(BI)) --> binary_iden(BI).
 bool(t_bool(E,S,E)) --> expr(E),symbol(S),expr(E).
 bool(t_bool('not',B)) --> [not],bool(B).
 bool(t_bool(B,'and',B)) --> bool(B),[and],bool(B).
 bool(t_bool(B,'or',B)) --> bool(B),[or],bool(B).
 
+%Arithemetic Expressions
 expr(t_expr(T,'+',E)) --> term(T),['+'],expr(E).
 expr(t_expr(T,'-',E)) --> term(T),['-'],expr(E).
 expr(t_expr(T)) --> term(T).
@@ -75,6 +77,7 @@ form(t_form(N)) --> number_iden(N).
 
 bool(t_bool('true')) --> [true].
 bool(t_bool('false')) --> [false].
+
 
 iden(t_iden(CH,ST,N)) --> char(CH),string_iden(ST),number_iden(N).
 
