@@ -4,20 +4,9 @@ P --> Program
 K --> Block 
 D --> Declaration 
 CL --> Command List
-DT --> Data Type 
-BI --> Boolean Value 
-B --> Boolean Expression 
-E --> Expression 
-T --> Term 
-F --> Form   (Form is used to assign Identifier or Number to Term) 
-I --> Identifier 
-N --> Number 
-DG --> Digit 
-S --> Symbols
-ID --> increment/Decrement
-Data --> Literals
-ST --> String
-CH --> Characters    
+C --> Multi Line Command
+E --> Expression
+I --> Identifier
 */
  
  
@@ -112,23 +101,29 @@ integer ::= digit, integer.
 
 
 
-BI ::=    true | false
+variable_type --> int | float | bool | string.
 
-I ::= CH ST N;
+decrementConstruct --> --.
+incrementConstruct --> ++.
 
-N ::=   DG N | ε
-ST ::=  CH ST | ε
-DG ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-CH ::=  Upper_case
-        | Lower_case
-        | special_char
+comparisonConstructs --> < | > | <= | >= | == | !=.
 
+single_quote --> '.
+double_quote --> ".
 
-Upper_case ::= A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+lower_case --> a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z.
 
-Lower_case ::= a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
+upper_case --> A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z.
 
-special_char ::= ! | " | # | $ | & | ' | ( | ) | * | + | , | - | . | / | : | ; | < | = | > | ? | @ | [ | \ | ] | ^ | _ | ` | { | | | } | ~
+symbol --> ' '| ! | " | # | $ | & | ' | ( | ) | * | + | , | - | . | / | : | ; | < | = | > | ? | @ | [ | \ | ] | ^ | _ | ` | { | | | } | ~.
 
-S ::=    < | > | >= | <= | == | !=
-ID ::=   I++ | I--
+digit --> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9.
+
+boolean --> ['True'] | ['False'].
+
+assignmentConstruct --> =.
+end_of_command --> ;.
+
+andConstruct --> and.
+orConstruct --> or.
+notConstruct --> not.
