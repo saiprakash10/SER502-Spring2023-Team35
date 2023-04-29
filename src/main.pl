@@ -1,6 +1,6 @@
 :- use_module(token_reader).
-:- use_module(parser).
-:- use_module(evaluator).
+:- use_module(parseTree).
+:- use_module(semanticEval).
 
 main(Filename) :- nl,
     ansi_format([bold,fg(yellow)], 'Parser in progress', []), nl,

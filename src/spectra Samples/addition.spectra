@@ -1,7 +1,0 @@
-start
-  var int num1 = 10;
-  var int num2 = 20;
-  var int sum;
-  sum = num1 + num2;
-  print(sum);
-stop.
