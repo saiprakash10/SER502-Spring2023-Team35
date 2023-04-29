@@ -7,7 +7,7 @@ Lexer -  Manideep, Akshat
 
 Contributions for Milestone 2:
 
-Parser - Akshat, Viswas
-Interpreter - Sai Prakash, Manideep
+Parser - Mandeep, Viswas
+Interpreter - Sai Prakash, Akshat
 Integration - Ryan
 Miscellaneous Tasks - Akshat, Viswas, Ryan, Manideep, Sai Prakash
