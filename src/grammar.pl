@@ -76,7 +76,15 @@ print --> [print_string], ['('], string, [')'], end_of_command.
             |[print_string], ['('], I, [')'], end_of_command.
             |[print_expression], ['('], E, [')'], end_of_command.
  
-ternary_expression::= ( B ) ? E : E
+ternary_expression --> ['('], condition, [')'], ['?'], E, [':'], E.
+
+value --> float | integer | boolean | string | I.
+
+boolean_operators --> andConstruct | orConstruct | notConstruct.
+
+operators --> ['+'] | ['-'] | ['*'] | ['/'] | boolean_operators.
+
+assignment_command --> I, assignmentConstruct, E, end_of_command.
 
  
 B ::=     BI | E S E | not B | B and B| B or B
