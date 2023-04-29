@@ -76,100 +76,29 @@ dec(t_pre_dec(V)) --> [--], iden(V).
 inc(t_post_inc(V)) --> iden(V), [++].
 inc(t_pre_inc(V)) --> [++], iden(V).
 
-char(t_char(Upper_case)) --> upper_case_pred(Upper_case).
-char(t_char(Lower_case)) --> lower_case_pred(Lower_case).
-char(t_char(special_char)) --> special_char_pred(special_char).
+% Checks valid variable names
+iden(t_iden(V), [V | Tail], Tail) :-
+    atom(V), not_keyword(V).
 
-upper_case_pred(t_Upper_case('A')) --> ['A'].
-upper_case_pred(t_Upper_case('B')) --> ['B'].
-upper_case_pred(t_Upper_case('C')) --> ['C'].
-upper_case_pred(t_Upper_case('D')) --> ['D'].
-upper_case_pred(t_Upper_case('E')) --> ['E'].
-upper_case_pred(t_Upper_case('F')) --> ['F'].
-upper_case_pred(t_Upper_case('G')) --> ['G'].
-upper_case_pred(t_Upper_case('H')) --> ['H'].
-upper_case_pred(t_Upper_case('I')) --> ['I'].
-upper_case_pred(t_Upper_case('J')) --> ['J'].
-upper_case_pred(t_Upper_case('K')) --> ['K'].
-upper_case_pred(t_Upper_case('L')) --> ['L'].
-upper_case_pred(t_Upper_case('M')) --> ['M'].
-upper_case_pred(t_Upper_case('N')) --> ['N'].
-upper_case_pred(t_Upper_case('O')) --> ['O'].
-upper_case_pred(t_Upper_case('P')) --> ['P'].
-upper_case_pred(t_Upper_case('Q')) --> ['Q'].
-upper_case_pred(t_Upper_case('R')) --> ['R'].
-upper_case_pred(t_Upper_case('S')) --> ['S'].
-upper_case_pred(t_Upper_case('T')) --> ['T'].
-upper_case_pred(t_Upper_case('U')) --> ['U'].
-upper_case_pred(t_Upper_case('V')) --> ['V'].
-upper_case_pred(t_Upper_case('W')) --> ['W'].
-upper_case_pred(t_Upper_case('X')) --> ['X'].
-upper_case_pred(t_Upper_case('Y')) --> ['Y'].
-upper_case_pred(t_Upper_case('Z')) --> ['Z'].
+not_keyword(V) :-
+    not(member(V, [int, float, bool, string, true, false, for,
+    if, elif, else, while, range, and, or, not, in, range, <, >, <=, >=, ==,
+    '!=', ++, --, +, -, *, /])).
 
-lower_case_pred(t_Lower_case('a')) --> ['a'].
-lower_case_pred(t_Lower_case('b')) --> ['b'].
-lower_case_pred(t_Lower_case('c')) --> ['c'].
-lower_case_pred(t_Lower_case('d')) --> ['d'].
-lower_case_pred(t_Lower_case('e')) --> ['e'].
-lower_case_pred(t_Lower_case('f')) --> ['f'].
-lower_case_pred(t_Lower_case('g')) --> ['g'].
-lower_case_pred(t_Lower_case('h')) --> ['h'].
-lower_case_pred(t_Lower_case('i')) --> ['i'].
-lower_case_pred(t_Lower_case('j')) --> ['j'].
-lower_case_pred(t_Lower_case('k')) --> ['k'].
-lower_case_pred(t_Lower_case('l')) --> ['l'].
-lower_case_pred(t_Lower_case('m')) --> ['m'].
-lower_case_pred(t_Lower_case('n')) --> ['n'].
-lower_case_pred(t_Lower_case('o')) --> ['o'].
-lower_case_pred(t_Lower_case('p')) --> ['p'].
-lower_case_pred(t_Lower_case('q')) --> ['q'].
-lower_case_pred(t_Lower_case('r')) --> ['r'].
-lower_case_pred(t_Lower_case('s')) --> ['s'].
-lower_case_pred(t_Lower_case('t')) --> ['t'].
-lower_case_pred(t_Lower_case('u')) --> ['u'].
-lower_case_pred(t_Lower_case('v')) --> ['v'].
-lower_case_pred(t_Lower_case('w')) --> ['w'].
-lower_case_pred(t_Lower_case('x')) --> ['x'].
-lower_case_pred(t_Lower_case('y')) --> ['y'].
-lower_case_pred(t_Lower_case('z')) --> ['z'].
+data_type(t_variable_type(Head), [Head | T], T) :-
+    member(Head, [int, float, bool, string]).
 
-special_char_pred(t_special_char('!')) --> ['!'].
-special_char_pred(t_special_char('"')) --> ['"'].
-special_char_pred(t_special_char('#')) --> ['#'].
-special_char_pred(t_special_char('$')) --> ['$'].
-special_char_pred(t_special_char('&')) --> ['&'].
-special_char_pred(t_special_char('\'')) --> ['\''].
-special_char_pred(t_special_char('(')) --> ['('].
-special_char_pred(t_special_char(')')) --> [')'].
-special_char_pred(t_special_char('*')) --> ['*'].
-special_char_pred(t_special_char('+')) --> ['+'].
-special_char_pred(t_special_char(',')) --> [','].
-special_char_pred(t_special_char('-')) --> ['-'].
-special_char_pred(t_special_char('.')) --> ['.'].
-special_char_pred(t_special_char('/')) --> ['/'].
-special_char_pred(t_special_char(':')) --> [':'].
-special_char_pred(t_special_char(';')) --> [';'].
-special_char_pred(t_special_char('<')) --> ['<'].
-special_char_pred(t_special_char('=')) --> ['='].
-special_char_pred(t_special_char('>')) --> ['>'].
-special_char_pred(t_special_char('?'))--> ['?'].
-special_char_pred(t_special_char('@')) --> ['@'].
-special_char_pred(t_special_char('[')) --> ['['].
-special_char_pred(t_special_char('\\')) --> ['\\'].
-special_char_pred(t_special_char(']')) --> [']'].
-special_char_pred(t_special_char('^')) --> ['^'].
-special_char_pred(t_special_char('_')) --> ['_'].
-special_char_pred(t_special_char('`')) --> ['`'].
+comp_opr(t_comp_opr(Head), [Head | T], T) :- member(Head, [<, >, <=, >=, ==, '!=']).
 
-symbol(t_symbol('<')) --> ['<'].
-symbol(t_symbol('>')) --> ['>'].
-symbol(t_symbol('>=')) --> ['>='].
-symbol(t_symbol('<=')) --> ['<='].
-symbol(t_symbol('==')) --> ['=='].
-symbol(t_symbol('!=')) --> ['!='].
+integer_iden(t_integer(Data), [Data | Tail], Tail) :- integer(Data).
+float_iden(t_float(Data), [Data | Tail], Tail) :- float(Data).
+string_iden(t_string(Data), [Data | Tail], Tail) :- string(Data).
+boolean_iden(t_boolean(I), [I | Tail], Tail) :- member(I, [true, false]).
 
-iter(t_increment(I,'++')) --> iden(I),['++'].
-iter(t_decrement(I,'--')) --> iden(I),['--'].
+assign_opr(t_assignment_operator) --> [=].
+end_of_command(t_end_of_command) --> [;].
 
+boolean_opr(t_boolean_operator(Bool_opr), [Bool_opr | Tail], Tail) :- member(Bool_opr, [and, or, not]).
 
+% Testing Predicates
+parse(T, L) :- assign_command(T, L, []);assign(T, L, []);assign_opr(T, L, []);block(T, L, []);comm(T, L, []);comm_list(T, L, []);bool(T, L, []);dec(T, L, []);elif_part(T, L, []);else_part(T, L, []);end_of_command(T, L, []);expr(T, L, []);expr_1(T, L, []);expr_2(T, L, []);expr_3(T, L, []);for_range_command(T, L, []);for_loop_command(T, L, []);if_command(T, L, []);if_part(T, L, []);inc(T, L, []);print_statement(T, L, []);program(T, L, []); ternary_expression(T, L, []);data(T, L, []);variable_change_part(T, L, []);decl(T, L, []);while_loop_command(T, L, []);iden(T, L, []);data_type(T, L, []);comp_opr(T, L, []);integer_iden(T, L, []);float_iden(T, L, []);string_iden(T, L, []);boolean_iden(T, L, []);boolean_opr(T, L, []).
