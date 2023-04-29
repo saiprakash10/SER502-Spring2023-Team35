@@ -60,13 +60,24 @@ for_range --> ['for'], I, ['in'], ['range'], ['('], inRange, [';'], inRange, [')
 inRange --> I | integer.
 
 for_loop --> ['for'], ['('], assignment, [';'], condition, [';'], variableChange, [')'], K.
+
+variableChange --> increment.
+                    |decrement.
+                    |I, assignmentConstruct, E.
+
+condition --> E, comparisonConstructs, E.
+
+decrement --> I, decrementConstruct.
+                |decrementConstruct, I.
+increment --> I, incrementConstruct.
+                |incrementConstruct, I.
+
+print --> [print_string], ['('], string, [')'], end_of_command.
+            |[print_string], ['('], I, [')'], end_of_command.
+            |[print_expression], ['('], E, [')'], end_of_command.
  
 ternary_expression::= ( B ) ? E : E
 
-print_statement::= print(E)
-                  |print(I)
-                  |print(ST)
-                  |print(B)
  
 B ::=     BI | E S E | not B | B and B| B or B
              
