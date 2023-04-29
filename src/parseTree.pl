@@ -1,197 +1,104 @@
-% parse tree production for grammar
-:- use_rendering(svgtree).
+:- module(program, [program/3]).
+:- table expr_1/3, expr_2/3, expr_3/3.
 
-% Program is a block of code
-program(t_prog(K)) --> block(K).
+% % Program is a single block followed by a period
+program(t_program(P)) --> comm_list(P).
 
-% Code Block - has a 'start' keyword, followed by declarations, commands, and an 'stop' keyword with period
-block(t_block('start', C, 'stop', '.')) --> [start], comm(C), [stop], ['.'].
+% Code Block - has a '{' keyword, followed by command list and a '}'
+block(t_block(CL)) --> ['{'], comm_list(CL),['}'].
 
-% Declarations and Data Type Definitions
-decl(t_decl('var', DT, I, '=', data, ';', D)) --> [var], data_type(DT), iden(I), ['='], data_literal(data), [';'], decl(D).
-decl(t_decl('var', DT, I, ';', D)) --> [var], data_type(DT), iden(I), [';'], decl(D).
-decl(t_decl('var', I, '=', I, ';', D)) --> [var], iden(I), ['='], iden(I), [';'], decl(D).
-decl([]) --> [].
-
-data_type(t_dt('int')) --> [int].
-data_type(t_dt('float')) --> [float].
-data_type(t_dt('string')) --> [string].
-data_type(t_dt('boolean')) --> [boolean].
-
-data_literal(t_data(BI)) --> binary_iden(BI).
-data_literal(t_data(N)) --> number_iden(N).
-data_literal(t_data(I)) --> iden(I).
-data_literal(t_data(ST)) --> string_iden(ST).
-
+% Commands can be a list of commands or a single command
+comm_list(t_comm_list(C, CL)) --> comm(C), comm_list(CL).
+comm_list(t_comm(C)) --> comm(C).
 
 % Commands are either declaration statements, print statements, if-then-else statements, for loops, while loop statements, a code block or ternary operator.
-comm(t_comm(D, C)) --> decl(D), comm(C).
-comm(t_comm(I, '=', E, ';', C)) --> iden(I), [':='], expr(E), [';'], comm(C).
-comm(t_comm(print_statement, ';', C)) --> print_statement_pred(print_statement), [';'], comm(C).
-comm(t_comm(if_then_else, ';', C)) --> if_then_else_pred(if_then_else), [';'], comm(C).
-comm(t_comm(while_loop, ';', C)) --> while_loop_pred(while_loop), [';'], comm(C).
-comm(t_comm(for_loop, ';', C)) --> for_loop_pred(for_loop), [';'], comm(C).
-comm(t_comm(ternary_expression, ';', C)) --> ternary_expression_pred(ternary_expression), [';'], comm(C).
-comm(K) --> block(K).
-comm([]) --> [].
+comm(C) --> assign_command(C) | for_range_command(C) | for_loop_command(C) | if_command(C) | print_statement(C) | decl(C) | while_loop_command(C).
 
-print_statement_pred(t_print_stat('print', '(', E, ')')) --> [print], ['('], expr(E), [')'].
-print_statement_pred(t_print_stat('print', '(', I, ')')) --> [print], ['('], iden(I), [')'].
-print_statement_pred(t_print_stat('print', '(', ST, ')')) --> [print], ['('], string_iden(ST), [')'].
-print_statement_pred(t_print_stat('print', '(', B, ')')) --> [print], ['('], bool(B), [')'].
+% If-Elif-Else Commands
+if_command(t_if_comm(If, Elif, Else)) --> if_part(If), elif_part(Elif), else_part(Else).
+if_command(t_if_comm(If, Else)) --> if_part(If), else_part(Else).
+if_command(t_if_comm(If)) --> if_part(If).
 
-if_then_else_pred(t_if_then_else('if', B, '{', C, '}')) --> [if], bool(B), ['{'], comm(C), ['}'].
-if_then_else_pred(t_if_then_else('if', B, '{', C, '}', 'else', '{', C, '}')) --> [if], bool(B), ['{'], comm(C), ['}'], [else],['{'], comm(C), ['}'].
-if_then_else_pred(t_if_then_else('if', B, '{', C, '}', Elif, 'else', '{', C, '}')) --> [if], bool(B), ['{'], comm(C), ['}'], elif_pred(Elif), [else], ['{'], comm(C), ['}'].
+if_part(t_if(B, K)) --> [if], ['('], bool(B), [')'], block(K).
+elif_part(t_elif(B, K)) --> [elif], ['('], bool(B), [')'], block(K).
+elif_part(t_elif(B, K, Elif)) --> [elif], ['('], bool(B), [')'], block(K), elif_part(Elif).
+else_part(t_else(K)) --> [else], block(K).
 
-elif_pred(t_elif('elif', B, '{', C, '}', Elif)) --> [elif], bool(B), ['{'], comm(C), ['}'], elif_pred(Elif).
-elif_pred([]) --> [].
+%Print Commands
+print_statement(t_print_string(I)) --> [print_string], ['('], string_iden(t_string(I)), [')'], end_of_command(_).
+print_statement(t_print_string(I)) --> [print_string], ['('], iden(t_iden(I)), [')'], end_of_command(_).
+print_statement(t_print_expr(E)) --> [print_expression], ['('], expr(E), [')'], end_of_command(_).
 
-while_loop_pred(t_while('while', B, '{', C, '}' )) --> ['while'], bool(B), ['{'], comm(C), ['}'].
+%Declarations
+decl(t_decl(DT, I)) --> data_type(DT), iden(I), end_of_command(_).
+decl(t_decl(DT, I, E)) --> data_type(DT), iden(I), assign_opr(_), expr(E), end_of_command(_).
 
-for_loop_pred(t_for('for', I, 'in', 'range', '(', N, ',', N, ')', '{', C, '}')) --> [for], iden(I), [in], [range], ['('], number_iden(N), [','], number_iden(N), [')'], ['{'], comm(C), ['}'].
-for_loop_pred(t_for('for', '(', I, '=', N, ';', I, S, I, ';', ID, ')')) --> [for], ['('], iden(I), ['='], number_iden(N), [';'], iden(I), symbol[S], iden(I), [;], iter(ID), [')'].
+assign_command(E) --> assign(E), end_of_command(_).
 
-ternary_expression_pred(t_ternary('(', B, ')', '?', E, ':', E)) --> ['('], bool(B), [')'], ['?'], expr(E), [':'], expr(E). 
+%For Loop Commands
+for_loop_command(t_for_loop_comm(A, B, ID, K)) --> [for], ['('], assign(A), [;], bool(B), [;], inc_dec(ID), [')'], block(K).
 
-%Boolean Expressions
-bool(t_bool(BI)) --> binary_iden(BI).
-bool(t_bool(E,S,E)) --> expr(E),symbol(S),expr(E).
-bool(t_bool('not',B)) --> [not],bool(B).
-bool(t_bool(B,'and',B)) --> bool(B),[and],bool(B).
-bool(t_bool(B,'or',B)) --> bool(B),[or],bool(B).
+inc_dec(E) --> inc(E) | dec(E).
+inc_dec(E) --> assign(E).
 
-%Arithemetic Expressions
-expr(t_expr(T,'+',E)) --> term(T),['+'],expr(E).
-expr(t_expr(T,'-',E)) --> term(T),['-'],expr(E).
-expr(t_expr(T)) --> term(T).
+for_range_command(t_for_range_comm(I, E1, E2, K)) --> [for], iden(I), [in], [range], ['('], expr(E1), [; ], expr(E2), [')'], block(K).
 
-term(t_term('(',E,')',T)) --> ['('],expr(E),[')'],term(T).
+%While Loop Commands
+while_loop_command(t_while_comm(B, K)) --> [while], ['('], bool(B), [')'], block(K).
 
-term(t_term(F,'*',T)) --> form(F),['*'],term(T).
-term(t_term(F,'/',T)) --> form(F),['/'],term(T).
-term(t_term(F)) --> form(F).
+%Boolean Expression Evaluation
+bool(t_bool(E1, Comp, E2)) --> expr(E1), comp_opr(Comp), expr(E2).
 
-form(t_form(I)) --> iden(I).
-form(t_form(N)) --> number_iden(N).
+% Arthemetic Expression Evaluation
+expr(t_expr(E)) --> expr_1(E).
 
-binary_iden(t_bool('true')) --> [true].
-binary_iden(t_bool('false')) --> [false].
+expr_1(t_add(X, Y)) --> expr_1(X), [+], expr_2(Y).
+expr_1(t_sub(X, Y)) --> expr_1(X), [-], expr_2(Y).
+expr_1(X) --> expr_2(X).
 
+expr_2(t_multiply(X, Y)) --> expr_2(X), [*], expr_3(Y).
+expr_2(t_divide(X, Y)) --> expr_2(X), [/], expr_3(Y).
+expr_2(t_boolean_expression(X, Bool_opr, Y)) --> expr(X), boolean_opr(Bool_opr), expr(Y).
+expr_2(X) --> expr_3(X).
 
-iden(t_iden(CH,ST,N)) --> char(CH),string_iden(ST),number_iden(N).
+expr_3(X) --> ['('], expr(X), [')'].
+expr_3(X) --> ternary_expression(X) | iden(X) | data(X).
 
-number_iden(t_number(DG,N)) --> digit(DG), number_iden(N).
-number_iden([]) --> [].
+ternary_expression(t_ternary_expression(B, Expr_true, Expr_false)) --> ['('], bool(B), ['?'], expr(Expr_true), [':'], expr(Expr_false), [')'].
 
-string_iden(t_string(CH,ST)) --> char(CH), string_iden(ST).
-string_iden([]) --> [].
+assign(t_assign(I, E)) --> iden(I), assign_opr(_), expr(E).
 
-digit(t_digit(0)) --> [0].
-digit(t_digit(1)) --> [1].
-digit(t_digit(2)) --> [2].
-digit(t_digit(3)) --> [3].
-digit(t_digit(4)) --> [4].
-digit(t_digit(5)) --> [5].
-digit(t_digit(6)) --> [6].
-digit(t_digit(7)) --> [7].
-digit(t_digit(8)) --> [8].
-digit(t_digit(9)) --> [9].
+%Data Types
+data(Data) --> integer_iden(Data) | float_iden(Data) | string_iden(Data) | boolean_iden(Data).
 
-char(t_char(Upper_case)) --> upper_case_pred(Upper_case).
-char(t_char(Lower_case)) --> lower_case_pred(Lower_case).
-char(t_char(special_char)) --> special_char_pred(special_char).
+dec(t_post_dec(V)) --> iden(V), [--].
+dec(t_pre_dec(V)) --> [--], iden(V).
+inc(t_post_inc(V)) --> iden(V), [++].
+inc(t_pre_inc(V)) --> [++], iden(V).
 
-upper_case_pred(t_Upper_case('A')) --> ['A'].
-upper_case_pred(t_Upper_case('B')) --> ['B'].
-upper_case_pred(t_Upper_case('C')) --> ['C'].
-upper_case_pred(t_Upper_case('D')) --> ['D'].
-upper_case_pred(t_Upper_case('E')) --> ['E'].
-upper_case_pred(t_Upper_case('F')) --> ['F'].
-upper_case_pred(t_Upper_case('G')) --> ['G'].
-upper_case_pred(t_Upper_case('H')) --> ['H'].
-upper_case_pred(t_Upper_case('I')) --> ['I'].
-upper_case_pred(t_Upper_case('J')) --> ['J'].
-upper_case_pred(t_Upper_case('K')) --> ['K'].
-upper_case_pred(t_Upper_case('L')) --> ['L'].
-upper_case_pred(t_Upper_case('M')) --> ['M'].
-upper_case_pred(t_Upper_case('N')) --> ['N'].
-upper_case_pred(t_Upper_case('O')) --> ['O'].
-upper_case_pred(t_Upper_case('P')) --> ['P'].
-upper_case_pred(t_Upper_case('Q')) --> ['Q'].
-upper_case_pred(t_Upper_case('R')) --> ['R'].
-upper_case_pred(t_Upper_case('S')) --> ['S'].
-upper_case_pred(t_Upper_case('T')) --> ['T'].
-upper_case_pred(t_Upper_case('U')) --> ['U'].
-upper_case_pred(t_Upper_case('V')) --> ['V'].
-upper_case_pred(t_Upper_case('W')) --> ['W'].
-upper_case_pred(t_Upper_case('X')) --> ['X'].
-upper_case_pred(t_Upper_case('Y')) --> ['Y'].
-upper_case_pred(t_Upper_case('Z')) --> ['Z'].
+% Checks valid variable names
+iden(t_iden(V), [V | Tail], Tail) :-
+    atom(V), not_keyword(V).
 
-lower_case_pred(t_Lower_case('a')) --> ['a'].
-lower_case_pred(t_Lower_case('b')) --> ['b'].
-lower_case_pred(t_Lower_case('c')) --> ['c'].
-lower_case_pred(t_Lower_case('d')) --> ['d'].
-lower_case_pred(t_Lower_case('e')) --> ['e'].
-lower_case_pred(t_Lower_case('f')) --> ['f'].
-lower_case_pred(t_Lower_case('g')) --> ['g'].
-lower_case_pred(t_Lower_case('h')) --> ['h'].
-lower_case_pred(t_Lower_case('i')) --> ['i'].
-lower_case_pred(t_Lower_case('j')) --> ['j'].
-lower_case_pred(t_Lower_case('k')) --> ['k'].
-lower_case_pred(t_Lower_case('l')) --> ['l'].
-lower_case_pred(t_Lower_case('m')) --> ['m'].
-lower_case_pred(t_Lower_case('n')) --> ['n'].
-lower_case_pred(t_Lower_case('o')) --> ['o'].
-lower_case_pred(t_Lower_case('p')) --> ['p'].
-lower_case_pred(t_Lower_case('q')) --> ['q'].
-lower_case_pred(t_Lower_case('r')) --> ['r'].
-lower_case_pred(t_Lower_case('s')) --> ['s'].
-lower_case_pred(t_Lower_case('t')) --> ['t'].
-lower_case_pred(t_Lower_case('u')) --> ['u'].
-lower_case_pred(t_Lower_case('v')) --> ['v'].
-lower_case_pred(t_Lower_case('w')) --> ['w'].
-lower_case_pred(t_Lower_case('x')) --> ['x'].
-lower_case_pred(t_Lower_case('y')) --> ['y'].
-lower_case_pred(t_Lower_case('z')) --> ['z'].
+not_keyword(V) :-
+    not(member(V, [int, float, bool, string, true, false, for,
+    if, elif, else, while, range, and, or, not, in, range, <, >, <=, >=, ==,
+    '!=', ++, --, +, -, *, /])).
 
-special_char_pred(t_special_char('!')) --> ['!'].
-special_char_pred(t_special_char('"')) --> ['"'].
-special_char_pred(t_special_char('#')) --> ['#'].
-special_char_pred(t_special_char('$')) --> ['$'].
-special_char_pred(t_special_char('&')) --> ['&'].
-special_char_pred(t_special_char('\'')) --> ['\''].
-special_char_pred(t_special_char('(')) --> ['('].
-special_char_pred(t_special_char(')')) --> [')'].
-special_char_pred(t_special_char('*')) --> ['*'].
-special_char_pred(t_special_char('+')) --> ['+'].
-special_char_pred(t_special_char(',')) --> [','].
-special_char_pred(t_special_char('-')) --> ['-'].
-special_char_pred(t_special_char('.')) --> ['.'].
-special_char_pred(t_special_char('/')) --> ['/'].
-special_char_pred(t_special_char(':')) --> [':'].
-special_char_pred(t_special_char(';')) --> [';'].
-special_char_pred(t_special_char('<')) --> ['<'].
-special_char_pred(t_special_char('=')) --> ['='].
-special_char_pred(t_special_char('>')) --> ['>'].
-special_char_pred(t_special_char('?'))--> ['?'].
-special_char_pred(t_special_char('@')) --> ['@'].
-special_char_pred(t_special_char('[')) --> ['['].
-special_char_pred(t_special_char('\\')) --> ['\\'].
-special_char_pred(t_special_char(']')) --> [']'].
-special_char_pred(t_special_char('^')) --> ['^'].
-special_char_pred(t_special_char('_')) --> ['_'].
-special_char_pred(t_special_char('`')) --> ['`'].
+data_type(t_variable_type(Head), [Head | T], T) :-
+    member(Head, [int, float, bool, string]).
 
-symbol(t_symbol('<')) --> ['<'].
-symbol(t_symbol('>')) --> ['>'].
-symbol(t_symbol('>=')) --> ['>='].
-symbol(t_symbol('<=')) --> ['<='].
-symbol(t_symbol('==')) --> ['=='].
-symbol(t_symbol('!=')) --> ['!='].
+comp_opr(t_comp_opr(Head), [Head | T], T) :- member(Head, [<, >, <=, >=, ==, '!=']).
 
-iter(t_increment(I,'++')) --> iden(I),['++'].
-iter(t_decrement(I,'--')) --> iden(I),['--'].
+integer_iden(t_integer(Data), [Data | Tail], Tail) :- integer(Data).
+float_iden(t_float(Data), [Data | Tail], Tail) :- float(Data).
+string_iden(t_string(Data), [Data | Tail], Tail) :- string(Data).
+boolean_iden(t_boolean(I), [I | Tail], Tail) :- member(I, [true, false]).
 
+assign_opr(t_assignment_operator) --> [=].
+end_of_command(t_end_of_command) --> [;].
 
+boolean_opr(t_boolean_operator(Bool_opr), [Bool_opr | Tail], Tail) :- member(Bool_opr, [and, or, not]).
+
+% Testing Predicates
+parse(T, L) :- assign_command(T, L, []);assign(T, L, []);assign_opr(T, L, []);block(T, L, []);comm(T, L, []);comm_list(T, L, []);bool(T, L, []);dec(T, L, []);elif_part(T, L, []);else_part(T, L, []);end_of_command(T, L, []);expr(T, L, []);expr_1(T, L, []);expr_2(T, L, []);expr_3(T, L, []);for_range_command(T, L, []);for_loop_command(T, L, []);if_command(T, L, []);if_part(T, L, []);inc(T, L, []);print_statement(T, L, []);program(T, L, []); ternary_expression(T, L, []);data(T, L, []);variable_change_part(T, L, []);decl(T, L, []);while_loop_command(T, L, []);iden(T, L, []);data_type(T, L, []);comp_opr(T, L, []);integer_iden(T, L, []);float_iden(T, L, []);string_iden(T, L, []);boolean_iden(T, L, []);boolean_opr(T, L, []).
