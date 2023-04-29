@@ -133,3 +133,30 @@ eval_boolean(false , or , true  , true).
 eval_boolean(false , or , false , false).
 
 eval_variable_type(t_variable_type(DT), _, DT).
+
+lookup(I, Data, [(_, I, Data) | _]).
+lookup(I, Data, [_Head | Tail]) :- lookup(I, Data, Tail).
+
+update(I, _, [], []) :- error_undeclared(I).
+update(I, Data, [Head | Tail], [Head | NewEnv]) :- Head \= (_, I, _), update(I, Data, Tail, NewEnv).
+update(I, Data, [(int , I, _) | Env], [ (int , I, Data) | Env]) :- integer(Data).
+update(I, Data, [(float , I, _) | Env], [ (float , I, Data) | Env]) :- float(Data).
+update(I, Data, [(bool , I, _) | Env], [ (bool , I, Data) | Env]) :- member(Data, [true, false]).
+update(I, Data, [(string, I, _) | Env], [ (string, I, Data) | Env]) :- string(Data).
+
+update(I, Data, [(int , I, _) | _], _)  :- not(integer(Data)),     error_type_conversion(I, int).
+update(I, Data, [(float, I, _) | _], _)  :- not(float(Data)),     error_type_conversion(I, float).
+update(I, Data, [(bool , I, _) | _], _)  :- not(member(Data, [true, false])), error_type_conversion(I, bool).
+update(I, Data, [(string, I, _) | _], _) :- not(string(Data)) ,     error_type_conversion(I, string).
+
+update(DT, I, Data, [], [(DT, I, Data)]).
+update(DT, I, Data, [Head | Tail], [Head | NewEnv]) :- Head \= (_, I, _), update(DT, I, Data, Tail, NewEnv).
+update(_, I, _, [(_, I, _) | _], _NewEnv) :- error_redefinition(I).
+
+error(String, List) :-
+    ansi_format([bold, fg(red)], String, List), halt.
+error_redefinition(I) :-
+    error('Error: Redefinition of ~w', [I]).
+error_type_conversion(I, DT) :-
+    error('Error: IMPRO doesn\'t support type conversion. (Variable \'~w\' is not of type \'~w\')', [I, DT]).
+error_undeclared(I) :- error('Error: ~w Undeclared', [I]).
