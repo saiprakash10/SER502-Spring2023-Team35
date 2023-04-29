@@ -24,31 +24,30 @@ elif_part(t_elif(B, K)) --> [elif], ['('], bool(B), [')'], block(K).
 elif_part(t_elif(B, K, Elif)) --> [elif], ['('], bool(B), [')'], block(K), elif_part(Elif).
 else_part(t_else(K)) --> [else], block(K).
 
-print_statement_pred(t_print_stat('print', '(', E, ')')) --> [print], ['('], expr(E), [')'].
-print_statement_pred(t_print_stat('print', '(', I, ')')) --> [print], ['('], iden(I), [')'].
-print_statement_pred(t_print_stat('print', '(', ST, ')')) --> [print], ['('], string_iden(ST), [')'].
-print_statement_pred(t_print_stat('print', '(', B, ')')) --> [print], ['('], bool(B), [')'].
+%Print Commands
+print_statement(t_print_string(I)) --> [print_string], ['('], string_iden(t_string(I)), [')'], end_of_command(_).
+print_statement(t_print_string(I)) --> [print_string], ['('], iden(t_iden(I)), [')'], end_of_command(_).
+print_statement(t_print_expr(E)) --> [print_expression], ['('], expr(E), [')'], end_of_command(_).
 
-if_then_else_pred(t_if_then_else('if', B, '{', C, '}')) --> [if], bool(B), ['{'], comm(C), ['}'].
-if_then_else_pred(t_if_then_else('if', B, '{', C, '}', 'else', '{', C, '}')) --> [if], bool(B), ['{'], comm(C), ['}'], [else],['{'], comm(C), ['}'].
-if_then_else_pred(t_if_then_else('if', B, '{', C, '}', Elif, 'else', '{', C, '}')) --> [if], bool(B), ['{'], comm(C), ['}'], elif_pred(Elif), [else], ['{'], comm(C), ['}'].
+%Declarations
+decl(t_decl(DT, I)) --> data_type(DT), iden(I), end_of_command(_).
+decl(t_decl(DT, I, E)) --> data_type(DT), iden(I), assign_opr(_), expr(E), end_of_command(_).
 
-elif_pred(t_elif('elif', B, '{', C, '}', Elif)) --> [elif], bool(B), ['{'], comm(C), ['}'], elif_pred(Elif).
-elif_pred([]) --> [].
+assign_command(E) --> assign(E), end_of_command(_).
 
-while_loop_pred(t_while('while', B, '{', C, '}' )) --> ['while'], bool(B), ['{'], comm(C), ['}'].
+%For Loop Commands
+for_loop_command(t_for_loop_comm(A, B, ID, K)) --> [for], ['('], assign(A), [;], bool(B), [;], inc_dec(ID), [')'], block(K).
 
-for_loop_pred(t_for('for', I, 'in', 'range', '(', N, ',', N, ')', '{', C, '}')) --> [for], iden(I), [in], [range], ['('], number_iden(N), [','], number_iden(N), [')'], ['{'], comm(C), ['}'].
-for_loop_pred(t_for('for', '(', I, '=', N, ';', I, S, I, ';', ID, ')')) --> [for], ['('], iden(I), ['='], number_iden(N), [';'], iden(I), symbol[S], iden(I), [;], iter(ID), [')'].
+inc_dec(E) --> inc(E) | dec(E).
+inc_dec(E) --> assign(E).
 
-ternary_expression_pred(t_ternary('(', B, ')', '?', E, ':', E)) --> ['('], bool(B), [')'], ['?'], expr(E), [':'], expr(E). 
+for_range_command(t_for_range_comm(I, E1, E2, K)) --> [for], iden(I), [in], [range], ['('], expr(E1), [; ], expr(E2), [')'], block(K).
 
-%Boolean Expressions
-bool(t_bool(BI)) --> binary_iden(BI).
-bool(t_bool(E,S,E)) --> expr(E),symbol(S),expr(E).
-bool(t_bool('not',B)) --> [not],bool(B).
-bool(t_bool(B,'and',B)) --> bool(B),[and],bool(B).
-bool(t_bool(B,'or',B)) --> bool(B),[or],bool(B).
+%While Loop Commands
+while_loop_command(t_while_comm(B, K)) --> [while], ['('], bool(B), [')'], block(K).
+
+%Boolean Expression Evaluation
+bool(t_bool(E1, Comp, E2)) --> expr(E1), comp_opr(Comp), expr(E2).
 
 %Arithemetic Expressions
 expr(t_expr(T,'+',E)) --> term(T),['+'],expr(E).
