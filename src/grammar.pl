@@ -3,7 +3,7 @@ Mapping
 P --> Program 
 K --> Block 
 D --> Declaration 
-C --> Command Lines (Statements) 
+CL --> Command List
 DT --> Data Type 
 BI --> Boolean Value 
 B --> Boolean Expression 
@@ -21,27 +21,27 @@ CH --> Characters
 */
  
  
-P ::=     K 
-K ::=     start C stop. 
- 
-D ::=  var DT I = data; D
-           | var DT I; D
-           | var I = I; D
-           | ε
+P ::= CL.
 
-DT ::=    int | float | string | boolean 
-data:= BI | N | I | ST
+K ::= ['{'], CL, ['}'].
+
+CL ::= C, CL.
+        |single_line_commands, CL.
+        |C.
+        |single_line_commands.
 
 
-C ::=   D C
-           | I = E; C 
-           |print_statement; C
-           |If_then_else; C
-           |while_loop; C
-           |for_loop; C
-           |ternary_expression; C
-           | K 
-           | ε 
+single_line_commands ::= print.
+                            |assignment_command.
+                            |D.
+
+
+C ::= for_loop.
+        |while_loop.
+        |for_range.
+        |if_command.
+        |if_elif_else_command.
+        |if_else_command.
  
  
 If_then_else::=  if B { C } 
