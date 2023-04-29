@@ -44,11 +44,14 @@ C ::= for_loop.
         |if_else_command.
  
  
-If_then_else::=  if B { C } 
-                | if B { C } else { C } 
-                | if B { C } Elif else { C } 
- 
-Elif ::= elif B { C } Elif | ε 
+if_command --> if_part.
+if_elif_else_command --> if_part, elif_part, else_part.
+if_else_command --> if_part, else_part.
+
+if_part --> ['if'], ['('], condition, [')'], K.
+else_part --> ['else'], K.
+                |['elif'], ['('], condition, [')'], K.
+                |['elif'], ['('], condition, [')'], K, elif_command.
 
 while_loop::=  while B { C }
  
