@@ -1,28 +1,42 @@
+% Load the module with a single exported predicate, eval_program/2
 :- module(eval_program, [eval_program/2]).
 
+% Evaluate a program, which consists of a command list, by invoking eval_comm_list with an empty environment
 eval_program(t_program(P), NewEnv) :- eval_comm_list(P, [], NewEnv).
 
+% Evaluate a command list by sequentially evaluating each command and updating the environment as necessary
 eval_comm_list(t_comm_list(C, CL), Env, NewEnv) :- eval_comm(C, Env, E1), eval_comm_list(CL, E1, NewEnv).
 eval_comm_list(t_comm(C), Env, NewEnv) :- eval_comm(C, Env, NewEnv).
 
+% Evaluate a block of commands by evaluating each command in the block and updating the environment as necessary
 eval_block(t_block(CL), Env, NewEnv) :- eval_comm_list(CL, Env, NewEnv).
 
+% Evaluate an assignment command by evaluating the right-hand side expression and updating the value of the variable in the environment
 eval_comm(t_assign(t_iden(I), E), Env, NewEnv) :- eval_expr(E, Env, R1), update(I, R1, Env, NewEnv).
+
+% Evaluate a declaration command with an initialization expression by evaluating the expression and adding the variable to the environment
 eval_comm(t_decl(DT, t_iden(I), E), Env, NewEnv) :- eval_variable_type(DT, Env, R1), eval_expr(E, Env, R2), update(R1, I, R2, Env, NewEnv).
 
+% Evaluate a declaration command without an initialization expression by adding the variable to the environment with a default value
 eval_comm(t_decl(DT, t_iden(I)), Env, NewEnv) :- eval_variable_type(DT, Env, R1), R1 = int,  update(R1, I, 0, Env, NewEnv).
 eval_comm(t_decl(DT, t_iden(I)), Env, NewEnv) :- eval_variable_type(DT, Env, R1), R1 = float,  update(R1, I, 0.0, Env, NewEnv).
 eval_comm(t_decl(DT, t_iden(I)), Env, NewEnv) :- eval_variable_type(DT, Env, R1), R1 = string,  update(R1, I, "", Env, NewEnv).
 eval_comm(t_decl(DT, t_iden(I)), Env, NewEnv) :- eval_variable_type(DT, Env, R1), R1 = bool,  update(R1, I, false, Env, NewEnv).
 
+% Evaluate a print expression command by evaluating the expression and printing the result
 eval_comm(t_print_expr(E), Env, Env) :- eval_expr(E, Env, Result), write(Result), nl.
+
+% Evaluate a print string command by printing the specified string
 eval_comm(t_print_string(String), Env, Env) :- write(String), nl.
 
+% Evaluate a for loop command by evaluating the initialization command, the condition, the update command, and the loop body
 eval_comm(t_for_loop_comm(A, B, ID, K), Env, NewEnv) :- eval_comm(A, Env, E1), eval_for_comm(B, ID, K, E1, NewEnv).
 
+% Evaluate a while loop command by evaluating the condition and the loop body, repeating until the condition is false
 eval_comm(t_while_comm(C, B), Env, NewEnv) :- eval_bool(C, Env, true), eval_block(B, Env, E1), eval_comm(t_while_comm(C, B), E1, NewEnv).
 eval_comm(t_while_comm(C, _), Env, _) :- eval_bool(C, Env, false).
 
+% Semantic for Enhanced for loop
 eval_comm(t_for_range_comm(I, Expr1, Expr2, K), Env, NewEnv) :- 
     eval_comm(t_assign(I, Expr1), Env, E1),
     eval_bool(t_bool(Expr1, t_comp_opr(>), Expr2), E1, false),
@@ -33,6 +47,7 @@ eval_comm(t_for_range_comm(I, Expr1, Expr2, K), Env, NewEnv) :-
     eval_bool(t_bool(Expr1, t_comp_opr(<), Expr2), E1, false),
     eval_for_comm(t_bool(I, t_comp_opr(>=), Expr2), t_pre_dec(I), K, E1, NewEnv).
 
+% Semantic for If else
 eval_comm(t_if_comm(If), Env, NewEnv) :- eval_if_part(If, Env, NewEnv, _).
 eval_comm(t_if_comm(If, _, _), Env, NewEnv) :- eval_if_part(If, Env, NewEnv, true).
 eval_comm(t_if_comm(If, Elif, _), Env, NewEnv) :- eval_if_part(If, Env, _, false), eval_elif_part(Elif, Env, NewEnv, true).
@@ -110,6 +125,7 @@ eval_expr(t_decrement(t_iden(I)), Env, NewEnv) :- lookup(I, Result, Env), NewVal
 eval_expr(t_increment(I), Env, NewEnv) :- lookup(I, Result, Env), NewValue is Result+1, update(I, NewValue, Env, NewEnv).
 eval_expr(t_decrement(I), Env, NewEnv) :- lookup(I, Result, Env), NewValue is Result-1, update(I, NewValue, Env, NewEnv).
 
+% Semantic for Ternary operation
 eval_expr(t_ternary_expression(B, Expr_true, _), Env, Result) :-
     eval_bool(B, Env, true),
     eval_expr(Expr_true, Env, Result).
