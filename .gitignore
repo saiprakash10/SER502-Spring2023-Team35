@@ -1,6 +1,2 @@
-
-src/spectra Samples/addition.tokens
-src/spectra Samples/addition.tokenstreams
-*.spectratokens
 *.pyc
 *.spetokens

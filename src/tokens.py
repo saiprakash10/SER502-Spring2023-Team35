@@ -54,7 +54,7 @@ def parse_arguments():
 
 def input_file(filename):
     content = None
-    filename = "spectra samples//" + filename
+    filename = "../data/" + filename
     
     try:
         with open(filename, "r") as input_file:
@@ -66,7 +66,7 @@ def input_file(filename):
 
 
 def store_tokens(tokens, filename):
-    path = "spectra samples//" + filename
+    path = "tokenized files//" + filename
     with open(path, "w") as f:
         for t in tokens:
             f.write('{}\n'.format(t.value))
@@ -85,6 +85,6 @@ if __name__ == '__main__':
     store_tokens(tokens, output_filename)
 
     eval = parsed_args.evaluate
-    output_filename = "spectra samples//"+output_filename
+    output_filename = "tokenized files//"+output_filename
     if eval:
         os.system("swipl -g \"main('" + output_filename + "')\" main.pl")
