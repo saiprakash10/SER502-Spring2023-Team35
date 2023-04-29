@@ -1,5 +1,0 @@
-int i;
-
-for(i=10; i>3; --i){
-    print_expression(i);
-}

@@ -1,5 +1,4 @@
 int i;
-for i in range(1+20; 10)
-{
+for(i=10; i>1; --i){
     print_expression(i);
 }
