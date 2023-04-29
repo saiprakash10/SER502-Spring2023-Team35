@@ -1,0 +1,5 @@
+int a = 10;
+while(a<15){
+    print_expression(a);
+    a = a + 1;
+}

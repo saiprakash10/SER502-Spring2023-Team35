@@ -1,0 +1,13 @@
+int a = 10;
+if( a == 5){
+    print_string("Equal to 5");
+}
+elif(a == 10){
+    print_string("Equal to 10");
+}
+elif(a == 15){
+    print_string("Equal to 15");
+}
+else{
+    print_string("Def");
+}
