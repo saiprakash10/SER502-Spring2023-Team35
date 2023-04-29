@@ -53,10 +53,13 @@ else_part --> ['else'], K.
                 |['elif'], ['('], condition, [')'], K.
                 |['elif'], ['('], condition, [')'], K, elif_command.
 
-while_loop::=  while B { C }
- 
-for_loop::=  for I in range (N,N){ C }
-            | for(I = N; I S N; ID){ C }
+while_loop --> ['while'], ['('], condition, [')'], K.
+
+for_range --> ['for'], I, ['in'], ['range'], ['('], inRange, [';'], inRange, [')'], K.
+
+inRange --> I | integer.
+
+for_loop --> ['for'], ['('], assignment, [';'], condition, [';'], variableChange, [')'], K.
  
 ternary_expression::= ( B ) ? E : E
 
