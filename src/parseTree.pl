@@ -1,39 +1,28 @@
-% parse tree production for grammar
-:- use_rendering(svgtree).
+:- module(program, [program/3]).
+:- table expr_1/3, expr_2/3, expr_3/3.
 
-% Program is a block of code
-program(t_prog(K)) --> block(K).
+% % Program is a single block followed by a period
+program(t_program(P)) --> comm_list(P).
 
-% Code Block - has a 'start' keyword, followed by declarations, commands, and an 'stop' keyword with period
-block(t_block('start', C, 'stop', '.')) --> [start], comm(C), [stop], ['.'].
+% Code Block - has a '{' keyword, followed by command list and a '}'
+block(t_block(CL)) --> ['{'], comm_list(CL),['}'].
 
-% Declarations and Data Type Definitions
-decl(t_decl('var', DT, I, '=', data, ';', D)) --> [var], data_type(DT), iden(I), ['='], data_literal(data), [';'], decl(D).
-decl(t_decl('var', DT, I, ';', D)) --> [var], data_type(DT), iden(I), [';'], decl(D).
-decl(t_decl('var', I, '=', I, ';', D)) --> [var], iden(I), ['='], iden(I), [';'], decl(D).
-decl([]) --> [].
-
-data_type(t_dt('int')) --> [int].
-data_type(t_dt('float')) --> [float].
-data_type(t_dt('string')) --> [string].
-data_type(t_dt('boolean')) --> [boolean].
-
-data_literal(t_data(BI)) --> binary_iden(BI).
-data_literal(t_data(N)) --> number_iden(N).
-data_literal(t_data(I)) --> iden(I).
-data_literal(t_data(ST)) --> string_iden(ST).
-
+% Commands can be a list of commands or a single command
+comm_list(t_comm_list(C, CL)) --> comm(C), comm_list(CL).
+comm_list(t_comm(C)) --> comm(C).
 
 % Commands are either declaration statements, print statements, if-then-else statements, for loops, while loop statements, a code block or ternary operator.
-comm(t_comm(D, C)) --> decl(D), comm(C).
-comm(t_comm(I, '=', E, ';', C)) --> iden(I), [':='], expr(E), [';'], comm(C).
-comm(t_comm(print_statement, ';', C)) --> print_statement_pred(print_statement), [';'], comm(C).
-comm(t_comm(if_then_else, ';', C)) --> if_then_else_pred(if_then_else), [';'], comm(C).
-comm(t_comm(while_loop, ';', C)) --> while_loop_pred(while_loop), [';'], comm(C).
-comm(t_comm(for_loop, ';', C)) --> for_loop_pred(for_loop), [';'], comm(C).
-comm(t_comm(ternary_expression, ';', C)) --> ternary_expression_pred(ternary_expression), [';'], comm(C).
-comm(K) --> block(K).
-comm([]) --> [].
+comm(C) --> assign_command(C) | for_range_command(C) | for_loop_command(C) | if_command(C) | print_statement(C) | decl(C) | while_loop_command(C).
+
+% If-Elif-Else Commands
+if_command(t_if_comm(If, Elif, Else)) --> if_part(If), elif_part(Elif), else_part(Else).
+if_command(t_if_comm(If, Else)) --> if_part(If), else_part(Else).
+if_command(t_if_comm(If)) --> if_part(If).
+
+if_part(t_if(B, K)) --> [if], ['('], bool(B), [')'], block(K).
+elif_part(t_elif(B, K)) --> [elif], ['('], bool(B), [')'], block(K).
+elif_part(t_elif(B, K, Elif)) --> [elif], ['('], bool(B), [')'], block(K), elif_part(Elif).
+else_part(t_else(K)) --> [else], block(K).
 
 print_statement_pred(t_print_stat('print', '(', E, ')')) --> [print], ['('], expr(E), [')'].
 print_statement_pred(t_print_stat('print', '(', I, ')')) --> [print], ['('], iden(I), [')'].
