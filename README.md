@@ -15,3 +15,18 @@ Sai Prakash Ravichandran (ASU ID: 1225761147)
 
 Sai Viswas Nirukonda (ASU ID: 1225421353)
 
+
+## Requirements before execution:
+
+Install swi-prolog as command line: Use the site https://www.swi-prolog.org/Download.html to download swi-prolog for different platforms
+
+pip install sly
+
+## Execution of the project:
+
+From the commnad line:
+
+Navigate to src directory of the project
+python Lexer.py --evaluate TestProgram.imp
+
+## Youtube Video Link
