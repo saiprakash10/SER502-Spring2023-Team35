@@ -44,55 +44,74 @@ C ::= for_loop.
         |if_else_command.
  
  
-if_command --> if_part.
-if_elif_else_command --> if_part, elif_part, else_part.
-if_else_command --> if_part, else_part.
+if_command ::= if_part.
+if_elif_else_command ::= if_part, elif_part, else_part.
+if_else_command ::= if_part, else_part.
 
-if_part --> ['if'], ['('], condition, [')'], K.
-else_part --> ['else'], K.
+if_part ::= ['if'], ['('], condition, [')'], K.
+else_part ::= ['else'], K.
                 |['elif'], ['('], condition, [')'], K.
                 |['elif'], ['('], condition, [')'], K, elif_command.
 
-while_loop --> ['while'], ['('], condition, [')'], K.
+while_loop ::= ['while'], ['('], condition, [')'], K.
 
-for_range --> ['for'], I, ['in'], ['range'], ['('], inRange, [';'], inRange, [')'], K.
+for_range ::= ['for'], I, ['in'], ['range'], ['('], inRange, [';'], inRange, [')'], K.
 
-inRange --> I | integer.
+inRange ::= I | integer.
 
-for_loop --> ['for'], ['('], assignment, [';'], condition, [';'], variableChange, [')'], K.
+for_loop ::= ['for'], ['('], assignment, [';'], condition, [';'], variableChange, [')'], K.
 
-variableChange --> increment.
+variableChange ::= increment.
                     |decrement.
                     |I, assignmentConstruct, E.
 
-condition --> E, comparisonConstructs, E.
+condition ::= E, comparisonConstructs, E.
 
-decrement --> I, decrementConstruct.
+decrement ::= I, decrementConstruct.
                 |decrementConstruct, I.
-increment --> I, incrementConstruct.
+increment ::= I, incrementConstruct.
                 |incrementConstruct, I.
 
-print --> [print_string], ['('], string, [')'], end_of_command.
+print ::= [print_string], ['('], string, [')'], end_of_command.
             |[print_string], ['('], I, [')'], end_of_command.
             |[print_expression], ['('], E, [')'], end_of_command.
  
-ternary_expression --> ['('], condition, [')'], ['?'], E, [':'], E.
+ternary_expression ::= ['('], condition, [')'], ['?'], E, [':'], E.
 
-value --> float | integer | boolean | string | I.
+value ::= float | integer | boolean | string | I.
 
-boolean_operators --> andConstruct | orConstruct | notConstruct.
+boolean_operators ::= andConstruct | orConstruct | notConstruct.
 
-operators --> ['+'] | ['-'] | ['*'] | ['/'] | boolean_operators.
+operators ::= ['+'] | ['-'] | ['*'] | ['/'] | boolean_operators.
 
-assignment_command --> I, assignmentConstruct, E, end_of_command.
+assignment_command ::= I, assignmentConstruct, E, end_of_command.
 
  
-B ::=     BI | E S E | not B | B and B| B or B
-             
-E ::=     T + E | T - E | T
-T ::=     ( E ) T
-T ::=     F * T | F / T | F
-F ::=     I | N
+D ::= variable_type, I, end_of_command.
+        |variable_type, I, assignmentConstruct, E, end_of_command.
+
+I ::= lower_case, I.
+        |I, upper_case.
+        |I, upper_case, I.
+        |I, ['_'], I.
+        |lower_case.
+
+string ::= single_quote, character_phrase, single_quote.
+                    |double_quote, character_phrase, double_quote.
+
+character_phrase ::= character, character_phrase.
+                        |character.
+
+character ::= lower_case | upper_case | digit | symbol.
+
+float ::= integer, ['.'], integer.
+            |integer.
+
+integer ::= digit, integer.
+            |digit.
+
+
+
 BI ::=    true | false
 
 I ::= CH ST N;
