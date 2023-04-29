@@ -49,42 +49,32 @@ while_loop_command(t_while_comm(B, K)) --> [while], ['('], bool(B), [')'], block
 %Boolean Expression Evaluation
 bool(t_bool(E1, Comp, E2)) --> expr(E1), comp_opr(Comp), expr(E2).
 
-%Arithemetic Expressions
-expr(t_expr(T,'+',E)) --> term(T),['+'],expr(E).
-expr(t_expr(T,'-',E)) --> term(T),['-'],expr(E).
-expr(t_expr(T)) --> term(T).
+% Arthemetic Expression Evaluation
+expr(t_expr(E)) --> expr_1(E).
 
-term(t_term('(',E,')',T)) --> ['('],expr(E),[')'],term(T).
+expr_1(t_add(X, Y)) --> expr_1(X), [+], expr_2(Y).
+expr_1(t_sub(X, Y)) --> expr_1(X), [-], expr_2(Y).
+expr_1(X) --> expr_2(X).
 
-term(t_term(F,'*',T)) --> form(F),['*'],term(T).
-term(t_term(F,'/',T)) --> form(F),['/'],term(T).
-term(t_term(F)) --> form(F).
+expr_2(t_multiply(X, Y)) --> expr_2(X), [*], expr_3(Y).
+expr_2(t_divide(X, Y)) --> expr_2(X), [/], expr_3(Y).
+expr_2(t_boolean_expression(X, Bool_opr, Y)) --> expr(X), boolean_opr(Bool_opr), expr(Y).
+expr_2(X) --> expr_3(X).
 
-form(t_form(I)) --> iden(I).
-form(t_form(N)) --> number_iden(N).
+expr_3(X) --> ['('], expr(X), [')'].
+expr_3(X) --> ternary_expression(X) | iden(X) | data(X).
 
-binary_iden(t_bool('true')) --> [true].
-binary_iden(t_bool('false')) --> [false].
+ternary_expression(t_ternary_expression(B, Expr_true, Expr_false)) --> ['('], bool(B), ['?'], expr(Expr_true), [':'], expr(Expr_false), [')'].
 
+assign(t_assign(I, E)) --> iden(I), assign_opr(_), expr(E).
 
-iden(t_iden(CH,ST,N)) --> char(CH),string_iden(ST),number_iden(N).
+%Data Types
+data(Data) --> integer_iden(Data) | float_iden(Data) | string_iden(Data) | boolean_iden(Data).
 
-number_iden(t_number(DG,N)) --> digit(DG), number_iden(N).
-number_iden([]) --> [].
-
-string_iden(t_string(CH,ST)) --> char(CH), string_iden(ST).
-string_iden([]) --> [].
-
-digit(t_digit(0)) --> [0].
-digit(t_digit(1)) --> [1].
-digit(t_digit(2)) --> [2].
-digit(t_digit(3)) --> [3].
-digit(t_digit(4)) --> [4].
-digit(t_digit(5)) --> [5].
-digit(t_digit(6)) --> [6].
-digit(t_digit(7)) --> [7].
-digit(t_digit(8)) --> [8].
-digit(t_digit(9)) --> [9].
+dec(t_post_dec(V)) --> iden(V), [--].
+dec(t_pre_dec(V)) --> [--], iden(V).
+inc(t_post_inc(V)) --> iden(V), [++].
+inc(t_pre_inc(V)) --> [++], iden(V).
 
 char(t_char(Upper_case)) --> upper_case_pred(Upper_case).
 char(t_char(Lower_case)) --> lower_case_pred(Lower_case).
