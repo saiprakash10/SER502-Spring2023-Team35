@@ -27,7 +27,8 @@ pip install sly
 From the commnad line:
 
 Navigate to src directory of the project and run the following command:
-        python Lexer.py --evaluate (name-of-the-program>).spe
+        
+python Lexer.py --evaluate (name-of-the-program).spe
 
 Example: python Lexer.py --evaluate sample.spe
 
